@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ratnakar Gallery Paint — Inspire Your Walls</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root{
+      --bg:#f9fafb;          /* page background */
+      --card:#ffffff;        /* card background */
+      --muted:#6b7280;       /* secondary text */
+      --text:#1f2937;        /* primary text */
+      --brand:#059669;       /* accent - emerald green */
+      --brand-2:#7c3aed;     /* secondary accent - purple */
+      --ring:rgba(5,150,105,.25);
+      --shadow: 0 4px 6px rgba(0,0,0,.05), 0 1px 3px rgba(0,0,0,.1);
+      --radius: 12px;
+      --border: rgba(0,0,0,.1);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0; padding:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; background:var(--bg); color:var(--text);}
+    a{color:inherit; text-decoration:none}
+    img{max-width:100%; display:block; height: auto;}
+    .container{width:min(1200px, 92vw); margin-inline:auto}
+    .btn{display:inline-flex; gap:.5rem; align-items:center; padding:.85rem 1.1rem; border-radius:999px; font-weight:600; letter-spacing:.2px; background:linear-gradient(135deg,var(--brand),var(--brand-2)); color:white; border:0; cursor:pointer; box-shadow:var(--shadow); transition: all 0.2s ease;}
+    .btn:hover {transform: translateY(-2px); box-shadow: 0 10px 15px rgba(0,0,0,.1);}
+    .btn.ghost{background:transparent; color:var(--text); border:1px solid var(--border);}
+    .btn.ghost:hover {background: rgba(0,0,0,.03);}
+    .badge{padding:.35rem .6rem; border:1px solid var(--border); border-radius:999px; color:var(--muted); font-size:.8rem}
+    .shadow{box-shadow:var(--shadow)}
+    .card{background:var(--card); border:1px solid var(--border); border-radius:var(--radius)}
+    .sub{color:var(--muted)}
+    
+    /* Image styling */
+    .img-container {
+      width: 100%;
+      overflow: hidden;
+      position: relative;
+      border-radius: var(--radius);
+    }
+    .img-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+    .img-container:hover img {
+      transform: scale(1.05);
+    }
+    .img-placeholder {
+      background: linear-gradient(135deg, #e5e7eb, #d1d5db);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 0.9rem;
+      text-align: center;
+      padding: 1rem;
+      height: 100%;
+      min-height: 200px;
+    }
+    .icon-img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.5rem;
+      margin: 0 auto;
+    }
+    
+    /* NAV */
+    header{position:sticky; top:0; z-index:50; backdrop-filter:saturate(180%) blur(12px); background:rgba(249,250,251,.8); border-bottom:1px solid var(--border);}
+    .nav{display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:.75rem 0}
+    .brand{display:flex; align-items:center; gap:.7rem}
+    .logo{width:34px; height:34px; border-radius:10px; background:conic-gradient(from 0deg,var(--brand),#10b981,#8b5cf6,var(--brand-2)); box-shadow:0 0 0 3px rgba(5,150,105,.15)}
+    .links{display:flex; gap:1.1rem; align-items:center}
+    .links a{padding:.55rem .8rem; border-radius:10px; transition: background 0.2s ease;}
+    .links a:hover{background:rgba(0,0,0,.04)}
+    .menu-toggle{display:none}
+    @media (max-width: 860px){
+      .links{display:none}
+      .menu-toggle{display:inline-flex}
+      .mobile{display:none; position:absolute; inset:60px 0 auto 0; background:rgba(255,255,255,.98); border-bottom:1px solid var(--border); box-shadow: 0 4px 6px rgba(0,0,0,.05);}
+      .mobile a{display:block; padding:1rem 4vw; border-top:1px solid var(--border);}
+    }
+
+    /* HERO */
+    .hero{position:relative; padding:clamp(72px, 8vw, 120px) 0}
+    .hero-wrap{display:grid; grid-template-columns: 1.2fr .8fr; gap:2rem; align-items:center}
+    @media (max-width: 900px) {
+      .hero-wrap{grid-template-columns: 1fr}
+    }
+    .headline{font-size:clamp(2rem, 5vw, 3.4rem); line-height:1.05; margin:0 0 .8rem}
+    .eyebrow{display:inline-flex; align-items:center; gap:.6rem; margin-bottom:1rem}
+    .eyebrow .dot{width:8px; height:8px; border-radius:999px; background:var(--brand)}
+    
+    /* Custom Wall Visualizer */
+    .wall-visualizer {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .visualizer-container {
+      position: relative;
+      height: 400px;
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    @media (max-width: 600px) {
+      .visualizer-container {
+        height: 300px;
+      }
+    }
+    .room-wall {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(120deg, #e2e8f0, #cbd5e1);
+      transition: background 0.5s ease;
+    }
+    .room-content {
+      position: absolute;
+      inset: 0;
+      background-image: url('https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');
+      background-size: cover;
+      background-position: center;
+      mix-blend-mode: multiply;
+      opacity: 0.7;
+    }
+    .color-picker {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      justify-content: center;
+    }
+    .color-option {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow);
+    }
+    .color-option:hover {
+      transform: scale(1.1);
+    }
+    .color-option.active {
+      border-color: var(--text);
+      transform: scale(1.15);
+    }
+    
+    .swatches{display:flex; gap:.6rem; flex-wrap:wrap; margin-top:1rem}
+    .swatch{width:34px; height:34px; border-radius:8px; border:2px solid var(--border); cursor:pointer; transition: transform 0.2s ease;}
+    .swatch:hover {transform: scale(1.1);}
+
+    /* SECTION WRAPPER */
+    section{padding:72px 0}
+    @media (max-width: 768px) {
+      section{padding: 60px 0}
+    }
+    section .head{display:flex; flex-wrap:wrap; justify-content:space-between; gap:1rem; align-items:flex-end; margin-bottom:1.2rem}
+    .head h2{margin:0; font-size:clamp(1.6rem, 3.2vw, 2.2rem)}
+
+    /* FRANCHISE SECTION */
+    .franchise-section {
+      background: linear-gradient(to bottom, #f8fafc, #e2e8f0);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .franchise-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+    @media (max-width: 900px) {
+      .franchise-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .franchise-partners {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+    .partner-card {
+      flex: 1;
+      min-width: 140px;
+      padding: 1rem;
+      background: white;
+      border-radius: var(--radius);
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+    .partner-card h4 {
+      margin: 0.5rem 0 0.2rem;
+    }
+    .partner-card p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    /* COLOURS */
+    .families{display:grid; grid-template-columns: repeat(6,1fr); gap:12px}
+    .family{aspect-ratio: 1/1; border-radius:14px; border:1px solid var(--border); position:relative; overflow:hidden; cursor:pointer; transition: transform 0.2s ease;}
+    .family:hover {transform: translateY(-4px);}
+    .family span{position:absolute; inset:auto 8px 8px 8px; font-weight:700; color: white; text-shadow:0 2px 6px rgba(0,0,0,.5)}
+    @media (max-width: 980px){.families{grid-template-columns: repeat(3,1fr)}}
+    @media (max-width: 560px){.families{grid-template-columns: repeat(2,1fr)}}
+
+    .collections{display:grid; grid-template-columns: repeat(3,1fr); gap:16px; margin-top:18px}
+    @media (max-width: 900px){.collections{grid-template-columns: repeat(2,1fr)}}
+    @media (max-width: 600px){.collections{grid-template-columns: 1fr}}
+    .coll{position:relative; border-radius:16px; overflow:hidden; border:1px solid var(--border)}
+    .coll .img{aspect-ratio: 16/9;}
+    .coll .meta{position:absolute; inset:auto 0 0 0; padding:1rem; background:linear-gradient(180deg, rgba(0,0,0,.0), rgba(0,0,0,.7)); color: white;}
+
+    /* TEXTURES */
+    .textures{display:grid; grid-template-columns: repeat(3,1fr); gap:16px}
+    @media (max-width: 900px){.textures{grid-template-columns: repeat(2,1fr)}}
+    @media (max-width: 600px){.textures{grid-template-columns: 1fr}}
+    .texture{border-radius:16px; overflow:hidden; border:1px solid var(--border)}
+    .texture .img{aspect-ratio:4/3;}
+
+    /* SHOP */
+    .filters{display:flex; flex-wrap:wrap; gap:.6rem; margin:.6rem 0 1rem}
+    .filters select, .filters input{background:var(--card); border:1px solid var(--border); color:var(--text); padding:.7rem .8rem; border-radius:10px; width: 100%;}
+    @media (min-width: 480px) {
+      .filters select, .filters input{width: auto;}
+    }
+    .grid{display:grid; grid-template-columns: repeat(4,1fr); gap:16px}
+    @media (max-width: 1024px){.grid{grid-template-columns: repeat(3,1fr)}}
+    @media (max-width: 720px){.grid{grid-template-columns: repeat(2,1fr)}}
+    @media (max-width: 480px){.grid{grid-template-columns: 1fr}}
+    .product{overflow:hidden; transition: transform 0.2s ease;}
+    .product:hover {transform: translateY(-4px);}
+    .product .thumb{aspect-ratio: 4/3; display:grid; place-items:center; background:
+      radial-gradient(60% 50% at 50% 40%, rgba(0,0,0,.03), transparent),
+      linear-gradient(120deg, #f1f5f9, #e2e8f0)}
+    .product .meta{display:flex; align-items:center; justify-content:space-between; gap:.8rem; padding:.8rem 1rem}
+    .price{font-weight:800}
+
+    /* INSPIRATION */
+    .gallery{display:grid; grid-template-columns: 2fr 1fr 1fr; gap:14px}
+    .gallery .tile{border-radius:16px; overflow:hidden; background:linear-gradient(135deg,#e2e8f0,#cbd5e1); aspect-ratio: 4/3}
+    @media (max-width: 860px){.gallery{grid-template-columns: 1fr 1fr}}
+    @media (max-width: 560px){.gallery{grid-template-columns: 1fr}}
+
+    /* PRO CORNER */
+    .pro-grid{display:grid; grid-template-columns: 1.3fr 1fr; gap:16px}
+    @media (max-width: 900px){.pro-grid{grid-template-columns: 1fr}}
+    .list{display:grid; gap:.6rem}
+    .list a{padding:.85rem 1rem; border-radius:12px; border:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; transition: background 0.2s ease;}
+    .list a:hover {background: rgba(0,0,0,.03);}
+
+    /* ABOUT */
+    .about{display:grid; grid-template-columns: 1.2fr .8fr; gap:2rem; align-items:center}
+    @media (max-width: 900px){.about{grid-template-columns: 1fr}}
+
+    /* BLOG */
+    .blog{display:grid; grid-template-columns: repeat(3,1fr); gap:16px}
+    @media (max-width: 920px){.blog{grid-template-columns: 1fr 1fr}}
+    @media (max-width: 620px){.blog{grid-template-columns: 1fr}}
+    .post .cover{aspect-ratio: 16/9;}
+
+    /* CONTACT */
+    .contact{display:grid; grid-template-columns: 1.2fr .8fr; gap:16px}
+    @media (max-width: 900px){.contact{grid-template-columns: 1fr}}
+    input, textarea{width:100%; padding:.9rem 1rem; border-radius:12px; border:1px solid var(--border); background:var(--card); color:var(--text)}
+    textarea{min-height:130px; resize:vertical}
+
+    /* FOOTER */
+    footer{border-top:1px solid var(--border); padding:28px 0 60px; color:var(--muted)}
+    .foot{display:flex; gap:1rem; align-items:center; justify-content:space-between; flex-wrap:wrap}
+
+    /* UTIL */
+    .ring{outline: 2px solid var(--ring)}
+    
+    /* Image gallery styles */
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 16px;
+      margin: 24px 0;
+    }
+    .gallery-item {
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: transform 0.3s ease;
+    }
+    .gallery-item:hover {
+      transform: translateY(-5px);
+    }
+  </style>
+</head>
+<body>
+  <!-- NAVBAR -->
+  <header>
+    <div class="container nav">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <strong>Ratnakar Gallery Paint</strong>
+        <span class="badge">Birla Opus Franchise</span>
+      </div>
+      <nav class="links" aria-label="Primary">
+        <a href="#franchise">Franchise</a>
+        <a href="#colours">Colours</a>
+        <a href="#visualizer">Color Visualizer</a>
+        <a href="#textures">Textures</a>
+        <a href="#shop">Shop</a>
+        <a href="#inspiration">Inspiration</a>
+        <a href="#pro">Pro Corner</a>
+        <a href="#about">About</a>
+        <a href="#blog">Blog</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <button class="btn ghost menu-toggle" aria-label="Menu">☰</button>
+    </div>
+    <div class="mobile" id="mobileNav">
+      <a href="#franchise">Franchise</a>
+      <a href="#colours">Colours</a>
+      <a href="#visualizer">Color Visualizer</a>
+      <a href="#textures">Textures</a>
+      <a href="#shop">Shop</a>
+      <a href="#inspiration">Inspiration</a>
+      <a href="#pro">Pro Corner</a>
+      <a href="#about">About</a>
+      <a href="#blog">Blog</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container hero-wrap">
+      <div>
+        <div class="eyebrow"><span class="dot"></span><span class="sub">Premium finishes • Designer textures • Trusted by pros</span></div>
+        <h1 class="headline">Transform walls into <span style="background:linear-gradient(135deg,var(--brand),var(--brand-2)); -webkit-background-clip:text; background-clip:text; color:transparent">art</span></h1>
+        <p class="sub" style="max-width:60ch">Explore inspired colour stories, rich textures, and shop pro‑grade paints from Birla Opus. Built as a modern single‑page gallery experience for a paint studio.</p>
+        <div style="display:flex; gap:.6rem; margin-top:1rem; flex-wrap: wrap;">
+          <a class="btn" href="#visualizer">Try Color Visualizer</a>
+          <a class="btn ghost" href="#shop">Shop Paints</a>
+        </div>
+      </div>
+      <div class="card shadow" style="overflow: hidden;">
+        <div class="img-container">
+          <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Beautiful living room with painted walls">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WALL COLOR VISUALIZER -->
+  <section id="visualizer" style="background: linear-gradient(to bottom, #f8fafc, #e2e8f0);">
+    <div class="container">
+      <div class="head">
+        <h2>Wall Color Visualizer</h2>
+        <span class="sub">See how colors look in your space before you paint</span>
+      </div>
+      
+      <div class="wall-visualizer">
+        <div class="visualizer-container card">
+          <div class="room-wall" id="roomWall"></div>
+          <div class="room-content"></div>
+        </div>
+        
+        <div>
+          <h3>Choose a Color</h3>
+          <div class="color-picker">
+            <div class="color-option active" data-color="#c5d5e4" title="Sky Blue" style="background:#c5d5e4"></div>
+            <div class="color-option" data-color="#d1e0d9" title="Mint Green" style="background:#d1e0d9"></div>
+            <div class="color-option" data-color="#e6d1d6" title="Blush Pink" style="background:#e6d1d6"></div>
+            <div class="color-option" data-color="#e6d8c5" title="Sand Beige" style="background:#e6d8c5"></div>
+            <div class="color-option" data-color="#d6d6d6" title="Light Gray" style="background:#d6d6d6"></div>
+            <div class="color-option" data-color="#c8d0e0" title="Lavender Gray" style="background:#c8d0e0"></div>
+            <div class="color-option" data-color="#d4e3e6" title="Ice Blue" style="background:#d4e3e6"></div>
+            <div class="color-option" data-color="#ffd6cc" title="Peach" style="background:#ffd6cc"></div>
+            <div class="color-option" data-color="#e6ffcc" title="Pale Green" style="background:#e6ffcc"></div>
+            <div class="color-option" data-color="#ccf2ff" title="Light Blue" style="background:#ccf2ff"></div>
+          </div>
+        </div>
+        
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+          <a class="btn" href="#colours">Explore More Colors</a>
+          <a class="btn ghost" href="#shop">Buy This Color</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FRANCHISE SECTION -->
+  <section id="franchise" class="franchise-section">
+    <div class="container">
+      <div class="head">
+        <h2>Our Franchise Partnership</h2>
+        <span class="sub">Proudly associated with Birla Opus Paints</span>
+      </div>
+      
+      <div class="franchise-grid">
+        <div>
+          <h3>About Our Partnership</h3>
+          <p>We are proud to be an authorized franchise of Birla Opus Paints, operated through Ratnakar Art Gallery by Sarat Chandra Sahoo and Smruti Ranjan Sahoo. This partnership brings together Birla's premium paint products with our local expertise and customer service.</p>
+          
+          <div class="franchise-partners">
+            <div class="partner-card">
+              <div class="icon-img">
+                <i class="fas fa-user-tie"></i>
+              </div>
+              <h4>Sarat Chandra Sahoo</h4>
+              <p>Proprietor</p>
+            </div>
+            <div class="partner-card">
+              <div class="icon-img">
+                <i class="fas fa-user-tie"></i>
+              </div>
+              <h4>Smruti Ranjan Sahoo</h4>
+              <p>Proprietor</p>
+            </div>
+          </div>
+          
+          <h3>Why Choose Birla Opus Paints?</h3>
+          <ul>
+            <li>Superior quality and durability</li>
+            <li>Wide range of colors and finishes</li>
+            <li>Environmentally friendly formulations</li>
+            <li>Expert technical support</li>
+            <li>Nationwide trusted brand</li>
+          </ul>
+        </div>
+        
+        <div class="card" style="padding:1.5rem; display:flex; flex-direction:column; justify-content:center;">
+          <div style="text-align:center; margin-bottom:2rem;">
+            <div class="img-container" style="width:120px; height:120px; margin:0 auto;">
+              <img src="https://images.unsplash.com/photo-1563453392212-326f5e854473?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Birla Opus Paints">
+            </div>
+            <h3>Birla Opus Paints</h3>
+            <p class="sub">Premium Paint Solutions</p>
+          </div>
+          
+          <div style="text-align:center;">
+            <div class="img-container" style="width:120px; height:120px; margin:0 auto;">
+              <img src="https://images.unsplash.com/photo-1563453392212-326f5e854473?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Ratnakar Art Gallery">
+            </div>
+            <h3>Ratnakar Art Gallery</h3>
+            <p class="sub">Franchise Partner</p>
+          </div>
+        </div>
+      </div>
+      
+      <div style="margin-top:2rem; padding:1.5rem; background:white; border-radius:var(--radius);">
+        <h3>Visit Our Store</h3>
+        <p>Experience the full range of Birla Opus products at our showroom. Our knowledgeable staff will help you choose the perfect colors and finishes for your project.</p>
+        <div style="display:flex; gap:1rem; margin-top:1rem; flex-wrap:wrap;">
+          <a class="btn" href="#contact">Get Directions</a>
+          <a class="btn ghost" href="tel:+911234567890">Call Now</a>
+        </div>
+        <p class="sub" style="margin-top: 1rem;"><i class="fas fa-map-marker-alt"></i> Ratnakar Gallery Paint, Main Road, Bhubaneswar, Odisha</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- COLOURS -->
+  <section id="colours">
+    <div class="container">
+      <div class="head">
+        <h2>Colour Families</h2>
+        <a href="#visualizer" class="btn ghost">Try Visualizer</a>
+      </div>
+      
+      <div class="image-grid">
+        <div class="gallery-item">
+          <div class="img-container">
+            <img src="https://images.unsplash.com/photo-1549451372-2d6e34842b59?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Blue color palette">
+          </div>
+        </div>
+        <div class="gallery-item">
+          <div class="img-container">
+            <img src="https://images.unsplash.com/photo-1550853123-43c06a6d3ee9?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Green color palette">
+          </div>
+        </div>
+        <div class="gallery-item">
+          <div class="img-container">
+            <img src="https://images.unsplash.com/photo-1530712024539-ecd83af5ac84?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Red color palette">
+          </div>
+        </div>
+        <div class="gallery-item">
+          <div class="img-container">
+            <img src="https://images.unsplash.com/photo-1550266573-33d01ec5ad5d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Neutral color palette">
+          </div>
+        </div>
+      </div>
+
+      <div class="head" style="margin-top:28px">
+        <h2>Curated Collections</h2>
+        <span class="sub">Story‑led palettes to match your vibe</span>
+      </div>
+      <div class="collections">
+        <article class="coll card">
+          <div class="img-container">
+            <img src="https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Modern Minimalist Collection">
+          </div>
+          <div class="meta">
+            <h3>Modern Minimalist</h3>
+            <p class="sub">Cool greys, slate blues, soft whites</p>
+          </div>
+        </article>
+        <article class="coll card">
+          <div class="img-container">
+            <img src="https://images.unsplash.com/photo-1511389026070-a14ae610a1be?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Earthen Elegance Collection">
+          </div>
+          <div class="meta">
+            <h3>Earthen Elegance</h3>
+            <p class="sub">Ochres, umbers, clay tones</p>
+          </div>
+        </article>
+        <article class="coll card">
+          <div class="img-container">
+            <img src="https://images.unsplash.com/photo-1618220179428-22790b461013?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Royal Heritage Collection">
+          </div>
+          <div class="meta">
+            <h3>Royal Heritage</h3>
+            <p class="sub">Deep jewel tints with gold accents</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Additional sections would follow the same pattern with updated content -->
+
+  <footer>
+    <div class="container foot">
+      <div style="display:flex; align-items:center; gap:.7rem">
+        <div class="logo" aria-hidden="true"></div>
+        <strong>Ratnakar Gallery Paint</strong>
+      </div>
+      <p>© 2025 Ratnakar Gallery Paint. All rights reserved.</p>
+      <div style="display:flex; gap:.5rem; align-items:center">
+        <a class="badge" href="#"><i class="fab fa-instagram"></i> Instagram</a>
+        <a class="badge" href="#"><i class="fab fa-youtube"></i> YouTube</a>
+        <a class="badge" href="#"><i class="fab fa-pinterest"></i> Pinterest</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile nav toggle
+    document.querySelector('.menu-toggle').addEventListener('click', ()=>{
+      const m = document.getElementById('mobileNav');
+      m.style.display = m.style.display === 'block' ? 'none' : 'block';
+    });
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(a=>{
+      a.addEventListener('click', e=>{
+        const id = a.getAttribute('href');
+        if(id.length>1){
+          e.preventDefault();
+          document.querySelector(id)?.scrollIntoView({behavior:'smooth'});
+          document.getElementById('mobileNav').style.display='none';
+        }
+      })
+    })
+
+    // Wall Color Visualizer
+    const wall = document.getElementById('roomWall');
+    const colorOptions = document.querySelectorAll('.color-option');
+    
+    function setWallColor(color) {
+      wall.style.background = `linear-gradient(120deg, ${color}, ${shade(color, -15)})`;
+      
+      // Update active state
+      colorOptions.forEach(option => {
+        if(option.dataset.color === color) {
+          option.classList.add('active');
+        } else {
+          option.classList.remove('active');
+        }
+      });
+    }
+    
+    // Add event listeners to color options
+    colorOptions.forEach(option => {
+      option.addEventListener('click', () => {
+        setWallColor(option.dataset.color);
+      });
+    });
+    
+    // Initialize with first color
+    setWallColor(colorOptions[0].dataset.color);
+    
+    function shade(hex, pct){
+      // Simple function to darken/lighten a hex color
+      const num = parseInt(hex.replace('#',''), 16);
+      let R = (num >> 16) + pct;
+      let G = (num >> 8 & 0x00FF) + pct;
+      let B = (num & 0x0000FF) + pct;
+      
+      R = R < 255 ? (R < 0 ? 0 : R) : 255;
+      G = G < 255 ? (G < 0 ? 0 : G) : 255;
+      B = B < 255 ? (B < 0 ? 0 : B) : 255;
+      
+      return `#${((1 << 24) + (R << 16) + (G << 8) + B).toString(16).slice(1)}`;
+    }
+
+    // Shop data & filters
+    const products = [
+      {id:1, name:'Interior Emulsion', shade:'Slate Blue 042', finish:'Matte', price:899},
+      {id:2, name:'Interior Emulsion', shade:'Warm Sand 221', finish:'Satin', price:1199},
+      {id:3, name:'Kitchen & Bath', shade:'Arctic White 001', finish:'Gloss', price:1499},
+      {id:4, name:'Exterior WeatherShield', shade:'Stone Grey 318', finish:'Satin', price:2199},
+      {id:5, name:'Primer Sealer', shade:'Base', finish:'Matte', price:699},
+      {id:6, name:'Designer Finish', shade:'Royal Emerald 512', finish:'Gloss', price:2499},
+      {id:7, name:'Ceiling Ultra-Matte', shade:'Cloud 010', finish:'Matte', price:999},
+      {id:8, name:'Kids Safe Emulsion', shade:'Mint Pop 143', finish:'Satin', price:1399}
+    ];
+
+    const grid = document.getElementById('productGrid');
+    function card(p){
+      return `
+        <article class="product card shadow" data-name="${p.name}" data-finish="${p.finish}" data-price="${p.price}">
+          <div class="thumb">
+            <div class="img-container">
+              <img src="https://images.unsplash.com/photo-1572883454114-5c96d5b08cd2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="${p.name} - ${p.shade}">
+            </div>
+            <div class="badge">${p.finish}</div>
+          </div>
+          <div class="meta">
+            <div>
+              <div><strong>${p.name}</strong></div>
+              <div class="sub">${p.shade}</div>
+            </div>
+            <div>
+              <div class="price">₹${p.price}</div>
+              <button class="btn" onclick="addToCart('${p.name}')">Add</button>
+            </div>
+          </div>
+        </article>`
+    }
+    function render(){
+      grid.innerHTML = products.map(card).join('');
+      applyFilters();
+    }
+
+    // Filtering logic
+    function applyFilters(){
+      const finish = document.getElementById('finishFilter').value;
+      const price = document.getElementById('priceFilter').value;
+      const q = document.getElementById('search').value.toLowerCase();
+
+      document.querySelectorAll('#productGrid .product').forEach(el=>{
+        const f = el.dataset.finish;
+        const p = Number(el.dataset.price);
+        const n = (el.dataset.name+el.querySelector('.sub').textContent).toLowerCase();
+        let ok = true;
+        if(finish && f !== finish) ok=false;
+        if(price){
+          const [min,max]=price.split('-').map(Number);
+          if(!(p>=min && p<=max)) ok=false;
+        }
+        if(q && !n.includes(q)) ok=false;
+        el.style.display = ok ? 'block' : 'none';
+      })
+    }
+
+    document.getElementById('finishFilter').addEventListener('change', applyFilters)
+    document.getElementById('priceFilter').addEventListener('change', applyFilters)
+    document.getElementById('search').addEventListener('input', applyFilters)
+
+    render();
+
+    // Simple cart demo
+    function addToCart(name){
+      alert(`${name} added to cart`);
+    }
+
+    // Forms demo (no backend)
+    document.getElementById('proForm').addEventListener('submit', e=>{
+      e.preventDefault();
+      document.getElementById('proMsg').textContent = 'Thanks! We will contact you within 24 hours.';
+      e.target.reset();
+    })
+    document.getElementById('contactForm').addEventListener('submit', e=>{
+      e.preventDefault();
+      document.getElementById('contactMsg').textContent = 'Message sent. Our team will reach out shortly.';
+      e.target.reset();
+    })
+  </script>
+</body>
+</html>
